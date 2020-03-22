@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cosmos/gaia/x/zoracle/internal/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -17,6 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	"github.com/cosmos/gaia/x/zoracle/internal/types"
 	"github.com/spf13/cobra"
 )
 
@@ -60,12 +60,12 @@ func GetCmdRequest(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "request [oracle-script-id] (-c [calldata]) (-r [requested-validator-count]) (-v [sufficient-validator-count]) (-x [expiration]) (-w [prepare-gas]) (-g [execute-gas])",
 		Short: "Make a new data request via an existing oracle script",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(3),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Make a new request via an existing oracle script with the configuration flags.
 Example:
-$ %s tx zoracle request 1 -c 1234abcdef -r 4 -v 3 -x 20 -w 50 -g 5000 --from mykey
-$ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --sufficient-validator-count 3 --expiration 20 --prepare-gas 50 --execute-gas 5000 --from mykey
+$ %s tx zoracle request 1 source_port source_channel -c 1234abcdef -r 4 -v 3 -x 20 -w 50 -g 5000 --from mykey
+$ %s tx zoracle request 1 source_port source_channel --calldata 1234abcdef --requested-validator-count 4 --sufficient-validator-count 3 --expiration 20 --prepare-gas 50 --execute-gas 5000 --from mykey
 `,
 				version.ClientName, version.ClientName,
 			),
@@ -120,6 +120,8 @@ $ %s tx zoracle request 1 --calldata 1234abcdef --requested-validator-count 4 --
 				prepareGas,
 				executionGas,
 				cliCtx.GetFromAddress(),
+				args[1],
+				args[2],
 			)
 
 			err = msg.ValidateBasic()

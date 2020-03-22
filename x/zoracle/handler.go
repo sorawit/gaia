@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
 	"github.com/cosmos/gaia/owasm"
 	"github.com/cosmos/gaia/x/zoracle/internal/types"
 )
@@ -225,6 +226,36 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 		}
 
 		keeper.SetResolve(ctx, requestID, types.Success)
+
+		// Send IBC Packet out!
+		sourceChannelEnd, found := keeper.ChannelKeeper.GetChannel(ctx, request.SourcePort, request.SourceChannel)
+		if !found {
+			fmt.Println("SOURCE NOT FOUND", request.SourcePort, request.SourceChannel)
+			continue
+		}
+
+		destinationPort := sourceChannelEnd.Counterparty.PortID
+		destinationChannel := sourceChannelEnd.Counterparty.ChannelID
+
+		// get the next sequence
+		sequence, found := keeper.ChannelKeeper.GetNextSequenceSend(ctx, request.SourcePort, request.SourceChannel)
+		if !found {
+			fmt.Println("SEQUENCE NOT FOUND", request.SourcePort, request.SourceChannel)
+			continue
+		}
+
+		packetData := types.NewOraclePacketData(
+			result,
+		)
+
+		packet := channel.NewPacket(
+			packetData,
+			sequence,
+			request.SourcePort, request.SourceChannel,
+			destinationPort, destinationChannel,
+		)
+
+		keeper.ChannelKeeper.SendPacket(ctx, packet)
 	}
 
 	keeper.SetPendingResolveList(ctx, pendingList[firstUnresolvedRequestIndex:])
@@ -245,6 +276,8 @@ func handleMsgRequestData(
 		msg.SufficientValidatorCount,
 		msg.Expiration,
 		msg.ExecuteGas,
+		msg.SourcePort,
+		msg.SourceChannel,
 	)
 	if err != nil {
 		return nil, err

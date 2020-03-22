@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	"github.com/cosmos/gaia/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/gaia/x/zoracle/internal/types"
 )
 
 // SetRequest is a function to save request to the given ID.
@@ -29,6 +29,7 @@ func (k Keeper) GetRequest(ctx sdk.Context, id types.RequestID) (types.Request, 
 func (k Keeper) AddRequest(
 	ctx sdk.Context, oracleScriptID types.OracleScriptID, calldata []byte,
 	requestedValidatorCount, sufficientValidatorCount, expiration int64, executeGas uint64,
+	sourcePort string, sourceChannel string,
 ) (types.RequestID, error) {
 	if !k.CheckOracleScriptExists(ctx, oracleScriptID) {
 		return 0, sdkerrors.Wrapf(types.ErrItemNotFound,
@@ -78,6 +79,8 @@ func (k Keeper) AddRequest(
 		ctx.BlockTime().Unix(),
 		ctx.BlockHeight()+expiration,
 		executeGas,
+		sourcePort,
+		sourceChannel,
 	))
 
 	return requestID, nil

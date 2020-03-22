@@ -240,6 +240,7 @@ func NewGaiaApp(
 		keys[zoracle.StoreKey],
 		app.bankKeeper,
 		app.stakingKeeper,
+		app.ibcKeeper.ChannelKeeper,
 		app.subspaces[zoracle.ModuleName],
 	)
 
