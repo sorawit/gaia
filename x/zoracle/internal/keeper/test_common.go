@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/cosmos/gaia/zoracle/internal/types"
+	"github.com/cosmos/gaia/x/zoracle/internal/types"
 	crypto "github.com/tendermint/tendermint/crypto"
 
 	"github.com/tendermint/tendermint/crypto/ed25519"

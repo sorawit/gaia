@@ -35,6 +35,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+
+	"github.com/cosmos/gaia/x/zoracle"
 )
 
 const appName = "GaiaApp"
@@ -66,6 +68,7 @@ var (
 		evidence.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		transfer.AppModuleBasic{},
+		zoracle.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -112,6 +115,7 @@ type GaiaApp struct {
 	evidenceKeeper evidence.Keeper
 	ibcKeeper      ibc.Keeper
 	transferKeeper transfer.Keeper
+	zoracleKeeper  zoracle.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -138,7 +142,7 @@ func NewGaiaApp(
 		bam.MainStoreKey, auth.StoreKey, bank.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
 		gov.StoreKey, params.StoreKey, ibc.StoreKey, transfer.StoreKey,
-		evidence.StoreKey, upgrade.StoreKey,
+		evidence.StoreKey, upgrade.StoreKey, zoracle.StoreKey,
 	)
 	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -162,6 +166,7 @@ func NewGaiaApp(
 	app.subspaces[gov.ModuleName] = app.paramsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
 	app.subspaces[crisis.ModuleName] = app.paramsKeeper.Subspace(crisis.DefaultParamspace)
 	app.subspaces[evidence.ModuleName] = app.paramsKeeper.Subspace(evidence.DefaultParamspace)
+	app.subspaces[zoracle.ModuleName] = app.paramsKeeper.Subspace(zoracle.DefaultParamspace)
 
 	// add keepers
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -230,6 +235,13 @@ func NewGaiaApp(
 		app.cdc, keys[transfer.StoreKey], transferCapKey,
 		app.ibcKeeper.ChannelKeeper, app.bankKeeper, app.supplyKeeper,
 	)
+	app.zoracleKeeper = zoracle.NewKeeper(
+		cdc,
+		keys[zoracle.StoreKey],
+		app.bankKeeper,
+		app.stakingKeeper,
+		app.subspaces[zoracle.ModuleName],
+	)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
@@ -248,20 +260,21 @@ func NewGaiaApp(
 		evidence.NewAppModule(app.evidenceKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
 		transfer.NewAppModule(app.transferKeeper),
+		zoracle.NewAppModule(app.zoracleKeeper),
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
 
 	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName, staking.ModuleName)
-	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, staking.ModuleName)
+	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, zoracle.ModuleName, staking.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
 		distr.ModuleName, staking.ModuleName, auth.ModuleName, bank.ModuleName,
 		slashing.ModuleName, gov.ModuleName, mint.ModuleName, supply.ModuleName,
-		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName,
+		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName, zoracle.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)

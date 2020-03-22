@@ -1,7 +1,7 @@
 package zoracle
 
 import (
-	"github.com/cosmos/gaia/zoracle/internal/types"
+	"github.com/cosmos/gaia/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )

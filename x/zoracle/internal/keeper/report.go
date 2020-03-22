@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/cosmos/gaia/zoracle/internal/types"
+	"github.com/cosmos/gaia/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

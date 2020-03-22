@@ -3,7 +3,7 @@ package rest
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/zoracle/internal/types"
+	"github.com/cosmos/gaia/x/zoracle/internal/types"
 )
 
 type ReportDetail struct {

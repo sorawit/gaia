@@ -10,7 +10,7 @@ import (
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	"github.com/gorilla/mux"
 
-	"github.com/cosmos/gaia/zoracle/internal/types"
+	"github.com/cosmos/gaia/x/zoracle/internal/types"
 )
 
 // buildTxDetail takes a TxResponse instance and builds new TxDetail contains only necessary fields.

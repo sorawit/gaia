@@ -7,9 +7,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/gaia/zoracle/client/cli"
-	"github.com/cosmos/gaia/zoracle/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/gaia/x/zoracle/client/cli"
+	"github.com/cosmos/gaia/x/zoracle/client/rest"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"

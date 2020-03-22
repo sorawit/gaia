@@ -3,7 +3,7 @@ package zoracle
 import (
 	"errors"
 
-	"github.com/cosmos/gaia/zoracle/internal/types"
+	"github.com/cosmos/gaia/x/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

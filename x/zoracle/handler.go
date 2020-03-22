@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/bandprotocol/bandchain/chain/owasm"
-	"github.com/cosmos/gaia/zoracle/internal/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/gaia/owasm"
+	"github.com/cosmos/gaia/x/zoracle/internal/types"
 )
 
 // NewHandler creates handler of this module
