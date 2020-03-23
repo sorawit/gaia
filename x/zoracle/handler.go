@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	channel "github.com/cosmos/cosmos-sdk/x/ibc/04-channel"
+	channeltypes "github.com/cosmos/cosmos-sdk/x/ibc/04-channel/types"
 	"github.com/cosmos/gaia/owasm"
 	"github.com/cosmos/gaia/x/zoracle/internal/types"
 )
@@ -32,6 +33,15 @@ func NewHandler(keeper Keeper) sdk.Handler {
 			return handleMsgAddOracleAddress(ctx, keeper, msg)
 		case MsgRemoveOracleAdderess:
 			return handleMsgRemoveOracleAddress(ctx, keeper, msg)
+		case channeltypes.MsgPacket:
+			switch data := msg.Data.(type) {
+			case OraclePacketData:
+				fmt.Println("RECEIVE PACKET!!!", data)
+				return nil, nil
+			default:
+				fmt.Println("unrecognized oracle packet data", data)
+				return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized oracle packet data type: %T", data)
+			}
 		default:
 			return nil, sdkerrors.Wrapf(
 				sdkerrors.ErrUnknownRequest,
@@ -244,7 +254,7 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 			continue
 		}
 
-		packetData := types.NewOraclePacketData(
+		packetData := NewOraclePacketData(
 			result,
 		)
 
@@ -255,7 +265,8 @@ func handleEndBlock(ctx sdk.Context, keeper Keeper) sdk.Result {
 			destinationPort, destinationChannel,
 		)
 
-		keeper.ChannelKeeper.SendPacket(ctx, packet)
+		err = keeper.ChannelKeeper.SendPacket(ctx, packet)
+		fmt.Println("SEND PACKET:", err)
 	}
 
 	keeper.SetPendingResolveList(ctx, pendingList[firstUnresolvedRequestIndex:])

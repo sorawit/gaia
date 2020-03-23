@@ -36,6 +36,7 @@ var (
 	NewMsgEditDataSource       = types.NewMsgEditDataSource
 	NewMsgAddOracleAddress     = types.NewMsgAddOracleAddress
 	NewMsgRemoveOracleAdderess = types.NewMsgRemoveOracleAdderess
+	NewOraclePacketData        = types.NewOraclePacketData
 
 	RequestStoreKey      = types.RequestStoreKey
 	ResultStoreKey       = types.ResultStoreKey
@@ -77,6 +78,7 @@ type (
 	MsgEditOracleScript     = types.MsgEditOracleScript
 	MsgAddOracleAddress     = types.MsgAddOracleAddress
 	MsgRemoveOracleAdderess = types.MsgRemoveOracleAdderess
+	OraclePacketData        = types.OraclePacketData
 
 	RawDataReport         = types.RawDataReport
 	RawDataReportWithID   = types.RawDataReportWithID

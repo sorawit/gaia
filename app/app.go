@@ -39,7 +39,11 @@ import (
 	"github.com/cosmos/gaia/x/zoracle"
 )
 
-const appName = "GaiaApp"
+const (
+	appName          = "GaiaApp"
+	Bech32MainPrefix = "cosmos"
+	Bip44CoinType    = 494
+)
 
 var (
 	// DefaultCLIHome default home directories for gaiacli
@@ -122,6 +126,22 @@ type GaiaApp struct {
 
 	// simulation manager
 	sm *module.SimulationManager
+}
+
+func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
+	config.SetBech32PrefixForAccount(
+		Bech32MainPrefix,
+		Bech32MainPrefix+sdk.PrefixPublic,
+	)
+	config.SetBech32PrefixForValidator(
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator,
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic,
+	)
+	config.SetBech32PrefixForConsensusNode(
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus,
+		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic,
+	)
+	config.SetCoinType(Bip44CoinType)
 }
 
 // NewGaiaApp returns a reference to an initialized GaiaApp.
